@@ -1,4 +1,7 @@
 # Semi-supervised Lifelong Learning Experiments
+
+![alt text](https://github.com/mako-anon/mako/blob/master/figs/fig.png)
+
 This code repository is used for semi-supervised lifelong learning experiments presented in paper **Mako: semi-supervised continual learning with minimal labeled data via data programming**.
 
 ## Version and Dependencies
@@ -7,6 +10,9 @@ This code repository is used for semi-supervised lifelong learning experiments p
 - Snorkel 0.95
 
 ## Data
+
+Data generation examples can be found in utils/generate_task_data.py, and Mako labeling examples in utils/run_label_generator.py. The main file now generates and labels all data for all experiments, which will take a very long time.
+
 - MNIST
 
 - CIFAR-10
