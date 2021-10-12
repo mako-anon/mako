@@ -1,6 +1,6 @@
 # Semi-supervised Lifelong Learning Experiments
 
-![alt text](https://github.com/mako-anon/mako/blob/master/figs/fig.png)
+![alt text](https://github.com/mako-anon/mako/blob/master/figs/fig.png =250x)
 
 This code repository is used for semi-supervised lifelong learning experiments presented in paper **Mako: semi-supervised continual learning with minimal labeled data via data programming**.
 
