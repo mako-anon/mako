@@ -1,8 +1,8 @@
 # Semi-supervised Lifelong Learning Experiments
 
-![alt text](https://github.com/mako-anon/mako/blob/master/figs/workflow.png)
-
 This code repository is used for semi-supervised lifelong learning experiments presented in paper **Mako: semi-supervised continual learning with minimal labeled data via data programming**.
+
+![alt text](https://github.com/mako-anon/mako/blob/master/figs/workflow.png)
 
 ## Version and Dependencies
 - Python 3.6 or higher
