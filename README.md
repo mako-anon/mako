@@ -1,4 +1,4 @@
-# Mako: Sample Semi-supervised Lifelong Machine Learning Experiments
+# Mako: Mako: semi-supervised continual learning with minimal labeled data via data programming
 
 This code repository is used for semi-supervised lifelong learning experiments presented in paper **Mako: semi-supervised continual learning with minimal labeled data via data programming**.
 
