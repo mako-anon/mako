@@ -7,7 +7,7 @@ This code repository is used for semi-supervised lifelong learning experiments p
 ## Version and Dependencies
 - Python 3.6 or higher
 
-- Snorkel 0.95
+- [Snorkel](https://github.com/snorkel-team/snorkel) 0.95
 
 ## Data
 
