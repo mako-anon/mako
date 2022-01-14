@@ -2,7 +2,7 @@
 
 This **anonymous** code repository is used for semi-supervised lifelong learning experiments presented in paper **Semi-supervised Continual Learning with Few Labeled Data via Data Programming**.
 
-![alt text](https://github.com/mako-anon/mako/blob/master/figs/workflow.png)
+![alt text](https://github.com/mako-anon/mako/blob/master/workflow.png)
 
 ## Version and Dependencies
 - Python 3.6 or higher
