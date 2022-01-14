@@ -128,25 +128,39 @@ class LeNetWeakLabeler(torch.nn.Module):
 
     # input float tensor output prob of class 1 as numpy array
     def marginal(self, X):
-        X_split = np.split(X, 100, axis=0)
-        out_all = []
-        for i in range(100):
-            X_tensor = torch.from_numpy(X_split[i]).to(DEVICE)
-            out = self(X_tensor).cpu().detach().numpy()
-            out_all.append(out)
-        out_all = np.concatenate(out_all)
-        return out_all[:, 1]
+        # if X.shape[0] >= 100:
+        #     num_split = 100
+        # else:
+        #     num_split = 1
+        # X_split = np.split(X, num_split, axis=0)
+        # out_all = []
+        # for i in range(num_split):
+        #     X_tensor = torch.from_numpy(X_split[i]).to(DEVICE)
+        #     out = self(X_tensor).cpu().detach().numpy()
+        #     out_all.append(out)
+        # out_all = np.concatenate(out_all)
+        # return out_all[:, 1]
+        X_tensor = torch.from_numpy(X).to(DEVICE)
+        out = self(X_tensor).cpu().detach().numpy()
+        return out[:, 1]
 
     # input float tensor output entire prob matrix as numpy array
     def prob_matrix(self, X):
-        X_split = np.split(X, 100, axis=0)
-        out_all = []
-        for i in range(100):
-            X_tensor = torch.from_numpy(X_split[i]).to(DEVICE)
-            out = self(X_tensor).cpu().detach().numpy()
-            out_all.append(out)
-        out_all = np.concatenate(out_all)
-        return out_all
+        # if X.shape[0] >= 100:
+        #     num_split = 100
+        # else:
+        #     num_split = 1
+        # X_split = np.split(X, num_split, axis=0)
+        # out_all = []
+        # for i in range(num_split):
+        #     X_tensor = torch.from_numpy(X_split[i]).to(DEVICE)
+        #     out = self(X_tensor).cpu().detach().numpy()
+        #     out_all.append(out)
+        # out_all = np.concatenate(out_all)
+        # return out_all
+        X_tensor = torch.from_numpy(X).to(DEVICE)
+        out = self(X_tensor).cpu().detach().numpy()
+        return out
 
     # train the model
     def train_cnn(self, X, y, verbose=False):
@@ -236,7 +250,7 @@ if __name__ == '__main__':
     X_u = np.load('D:\phd\mako\mako_iclr\\sample_task_data\mnist\X_u.npy')
     y_u = np.load('D:\phd\mako\mako_iclr\\sample_task_data\mnist\y_u.npy')
 
-    from utils.bootstrapping import bootstrap_xy
+    from bootstrapping import bootstrap_xy
 
     X_boot, y_boot = bootstrap_xy(X_l, y_l, size=30)
     lfs = []

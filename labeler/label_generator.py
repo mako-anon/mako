@@ -8,11 +8,11 @@ Label generator that
 import numpy as np
 import torch
 from snorkel.labeling.model.label_model import LabelModel
-from labeler.weak_labeler_generation.heuristic_generator import HeuristicGenerator
+from labeler.program_synthesis.heuristic_generator import HeuristicGenerator
 from labeler.temp_scaling import tstorch_calibrate
 from labeler.lenet_weak_labeler import LeNetWeakLabeler
-from labeler.resnet_weak_labeler import ResNetWeakLabeler
-from utils.bootstrapping import bootstrap_xy_balanced_class
+from labeler.omniglot_weak_labeler import OmniglotWeakLabeler
+from bootstrapping import bootstrap_xy_balanced_class
 
 if torch.cuda.is_available():
     DEVICE = "cuda:0"
@@ -96,21 +96,17 @@ class LabelGenerator:
                         if is_bad_config(bad_configs, [lr, n_batches, n_epochs]):
                             continue
 
-                        if self.task in ['mnist', 'mnist_5_way']:
+                        if self.task in ['mnist', 'fashion', 'cifar10']:
                             model = LeNetWeakLabeler(in_dim_c=X.shape[1], in_dim_h=X.shape[2],
                                                  in_dim_w=X.shape[3], out_dim=self.num_classes,
                                                  dict_training_param=dict_training_params).to(DEVICE)
-                        elif self.task in ['cifar10', 'cifar100_5_way', 'cifar10_10_way']:
-                            model = ResNetWeakLabeler(in_dim_c=X.shape[1], in_dim_h=X.shape[2],
-                                                 in_dim_w=X.shape[3], out_dim=self.num_classes,
-                                                 dict_training_param=dict_training_params).to(DEVICE)
                         else:
-                            raise  NotImplementedError
+                            raise NotImplementedError
 
                         accs = []
                         # conf_counts = []
                         # train the model under this parameter configuration on bootstrapping subsets
-                        for i in range(5):
+                        for i in range(10):
                             print("Training for hyperparameters search: iteration " + str(i))
                             X_l_boot, y_l_boot = bootstrap_xy_balanced_class(X, y,
                                                                              size_per_class=self.bootstrap_size_per_class)
@@ -124,9 +120,9 @@ class LabelGenerator:
                             print("Training result: " + str(acc))
 
                         # good config requirement: average accuracy on X_l greater than threshold
-                        # pass_acc_threshold = np.count_nonzero(np.array(accs) >= acc_threshold)
-                        # if pass_acc_threshold >= 9:
-                        if np.average(accs) >= acc_threshold:
+                        pass_acc_threshold = np.count_nonzero(np.array(accs) >= acc_threshold)
+                        if pass_acc_threshold >= 8:
+                        # if np.average(accs) >= acc_threshold:
                             new_config = [lr, n_batches, n_epochs]
                             if not is_bad_config(bad_configs, new_config):
                                 good_configs.append(new_config)
@@ -189,9 +185,9 @@ class LabelGenerator:
 
         return np.abs(max_empirical_acc - learned_acc) > epsilon, max_empirical_acc, learned_acc
 
-    # Call modified Snuba to generate weak labelers; this will be the major computational overhead
+    # Call Snuba to generate weak labelers; this will be the major computational overhead
     # Compute theoretical exit condition and decide exit
-    def generate_weak_lfs(self, log_file):
+    def generate_snuba_lfs(self, log_file):
 
         with open(log_file, 'a') as f:
 
@@ -313,25 +309,25 @@ class LabelGenerator:
             L_l = L_l + [y_l_hat] * pad
         return np.array(L_u).T, np.array(L_l).T
 
-    # main function to be called
-    def generate_labels(self, log_file):
-
-        # Step 1: generate label matrices from Snuba, track number of labelers generated
-        lfs = self.generate_weak_lfs(log_file)
-        L_u, L_l = self.generate_label_matrices(lfs)
-        L = np.concatenate((L_l, L_u), axis=0)
-
-        # Step 2: ensemble label matrices by training a Snorkel LabelModel
-        # Here, need at least 3 weak labeling functions, so there is a padding in generate_label_matrices
-        snorkel_model = LabelModel(cardinality=self.num_classes, verbose=False)
-        snorkel_model.fit(L)
-
-        # Step 3: compute logits
-        y_snorkel_u, logit_u = snorkel_model.predict(L_u, return_probs=True)
-        y_snorkel_l, logit_l = snorkel_model.predict(L_l, return_probs=True)
-
-        # Step 4: temperature scaling to produce final y_u_prime
-        logit_u_calibrated = tstorch_calibrate(val_logits=logit_l, val_ys=self.y_l.astype('int64'), logits=logit_u)
-        y_u_prime = np.argmax(logit_u_calibrated, axis=1)
-
-        return logit_u_calibrated, y_u_prime, logit_l, y_snorkel_l
+    # # main function to be called
+    # def generate_labels(self, log_file):
+    #
+    #     # Step 1: generate label matrices from Snuba, track number of labelers generated
+    #     lfs = self.generate_snuba_lfs(log_file)
+    #     L_u, L_l = self.generate_label_matrices(lfs)
+    #     L = np.concatenate((L_l, L_u), axis=0)
+    #
+    #     # Step 2: ensemble label matrices by training a Snorkel LabelModel
+    #     # Here, need at least 3 weak labeling functions, so there is a padding in generate_label_matrices
+    #     snorkel_model = LabelModel(cardinality=self.num_classes, verbose=False)
+    #     snorkel_model.fit(L)
+    #
+    #     # Step 3: compute logits
+    #     y_snorkel_u, logit_u = snorkel_model.predict(L_u, return_probs=True)
+    #     y_snorkel_l, logit_l = snorkel_model.predict(L_l, return_probs=True)
+    #
+    #     # Step 4: temperature scaling to produce final y_u_prime
+    #     logit_u_calibrated = tstorch_calibrate(val_logits=logit_l, val_ys=self.y_l.astype('int64'), logits=logit_u)
+    #     y_u_prime = np.argmax(logit_u_calibrated, axis=1)
+    #
+    #     return logit_u_calibrated, y_u_prime, logit_l, y_snorkel_l

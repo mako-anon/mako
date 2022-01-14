@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import sparse
-from labeler.weak_labeler_generation.label_aggregator import LabelAggregator
+from labeler.program_synthesis.label_aggregator import LabelAggregator
 
 def odds_to_prob(l):
   """

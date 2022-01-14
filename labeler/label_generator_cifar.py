@@ -8,7 +8,7 @@ Label generator that
 import numpy as np
 import torch
 from snorkel.labeling.model.label_model import LabelModel
-from labeler.weak_labeler_generation.heuristic_generator import HeuristicGenerator
+from labeler.program_synthesis.heuristic_generator import HeuristicGenerator
 from labeler.temp_scaling import tstorch_calibrate
 from labeler.lenet_weak_labeler import LeNetWeakLabeler
 from labeler.omniglot_weak_labeler import OmniglotWeakLabeler

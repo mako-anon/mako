@@ -6,8 +6,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from labeler.lenet_weak_labeler import LeNetWeakLabeler
-from labeler.resnet_weak_labeler import ResNetWeakLabeler
-from utils.bootstrapping import bootstrap_xy_balanced_class
+from labeler.cifar_weak_labeler import CifarWeakLabeler
+from labeler.omniglot_weak_labeler import OmniglotWeakLabeler
+from bootstrapping import bootstrap_xy_balanced_class
 
 import torch
 if torch.cuda.is_available():
@@ -100,20 +101,17 @@ class Synthesizer(object):
             dict_training_param = {'learning_rate': self.lr, 'num_batches': self.n_batches, 'num_epochs': self.n_epochs}
             X_boot, y_boot = bootstrap_xy_balanced_class(self.val_primitive_matrix, self.val_ground,
                                                          size_per_class=self.bootstrap_size_per_class)
-            if self.task == 'mnist':
+            if self.task == 'mnist' or self.task == 'fashion':
                 cnn = LeNetWeakLabeler(in_dim_h=28, in_dim_w=28, in_dim_c=1, out_dim=2,
                                        dict_training_param=dict_training_param).to(DEVICE)
             elif self.task == 'cifar10':
-                cnn = ResNetWeakLabeler(in_dim_h=32, in_dim_w=32, in_dim_c=3, out_dim=2,
+                cnn = CifarWeakLabeler(in_dim_h=32, in_dim_w=32, in_dim_c=3, out_dim=2,
                                        dict_training_param=dict_training_param).to(DEVICE)
+            elif self.task == 'omniglot':
+                cnn = OmniglotWeakLabeler(in_dim_h=28, in_dim_w=28, in_dim_c=1, out_dim=10,
+                                          dict_training_param=dict_training_param).to(DEVICE)
             elif self.task == 'mnist_5_way':
                 cnn = LeNetWeakLabeler(in_dim_h=28, in_dim_w=28, in_dim_c=1, out_dim=5,
-                                       dict_training_param=dict_training_param).to(DEVICE)
-            elif self.task == 'cifar100_5_way':
-                cnn = ResNetWeakLabeler(in_dim_h=32, in_dim_w=32, in_dim_c=3, out_dim=5,
-                                       dict_training_param=dict_training_param).to(DEVICE)
-            elif self.task == 'cifar10_10_way':
-                cnn = ResNetWeakLabeler(in_dim_h=32, in_dim_w=32, in_dim_c=3, out_dim=10,
                                        dict_training_param=dict_training_param).to(DEVICE)
             else:
                 raise NotImplementedError

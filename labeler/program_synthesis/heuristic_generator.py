@@ -1,12 +1,8 @@
-"""Modified from Snuba repo: https://github.com/HazyResearch/reef/
-   Added CNN weak labelers with bootstrapping and multiclass option
-"""
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score
-from labeler.weak_labeler_generation.synthesizer import Synthesizer
-from labeler.weak_labeler_generation.verifier import Verifier
+from labeler.program_synthesis.synthesizer import Synthesizer
+from labeler.program_synthesis.verifier import Verifier
 
 import torch
 if torch.cuda.is_available():
