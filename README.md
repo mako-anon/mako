@@ -1,4 +1,4 @@
-# Semi-supervised Continual Learning with Few Labeled Data via Data Programming
+# Mako: Semi-supervised Continual Learning with Few Labeled Data via Data Programming
 
 This **anonymous** code repository is used for semi-supervised lifelong learning experiments presented in paper **Semi-supervised Continual Learning with Few Labeled Data via Data Programming**.
 
