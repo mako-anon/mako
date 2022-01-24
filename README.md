@@ -9,15 +9,33 @@ This **anonymous** code repository is used for semi-supervised lifelong learning
 
 - [Snorkel](https://github.com/snorkel-team/snorkel) 0.95
 
-## Data
+- [PyTorch](https://pytorch.org/) 1.6.0
 
-Data generation examples can be found in utils/generate_task_data.py, and Mako labeling examples in utils/run_label_generator.py. The main file now generates and labels all data for all experiments, which will take a very long time.
+- [TensorFlow](https://www.tensorflow.org/) 2.2.0
 
-- MNIST
 
-- CIFAR-10
+## Instructions
 
-- CIFAR-100 (Lifelong)
+### Step 0: Prepare for task data
+
+Please refer to utils/generate_task_data.py for this step. The script shows examples that prepare task data for binary MNIST, binary CIFAR-10,
+5-way MNIST, 10-way CIFAR-10 and 5-way CIFAR-100. Each task has (X_L, Y_L, X_U, Y_U, X_T, Y_T), corresponding to labeled
+training data, unlabeled training data and testing data, where Y_U is unused.
+
+### Step 1: Generate weak labelers
+
+Please refer to utils/weak_labeler_generator.py for this step. The script shows examples that call a modified version of
+[Snuba](https://github.com/HazyResearch/reef/) to generate a set weak labelers as PyTorch models for each task.
+
+### Step 2: Ensemble strong pseudo-labels by data programming
+
+Please refer to utils/strong_labels_generator.py for this step. The script shows examples that ensemble strong labels from the weak labelers
+using one of the three methods: majority voting, repeated labeling and Snorkel generative model. In addition, we can adjust
+the size of X_U and corrupt a portion of y_u_prime by random flipping for analysis.
+
+### Step 3: Supervised lifelong machine learning
+
+
 
 ## Lifelong Machine Learning Tools
 - Single Neural Net model
