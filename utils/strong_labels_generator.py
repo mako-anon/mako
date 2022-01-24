@@ -112,17 +112,15 @@ def snorkel_labeling(L_u, L_l, y_l):
 # Generate labels, methods can be majority voting (mv), repeated labeling (rl) or snorkel
 # The labels are generated for different sizes of X_U
 def generate_label_for_binary_classification(task, method='mv'):
-    if task == 'mnist':
-        task_parent_dir = os.path.join(TASK_ROOT, 'mnist_bin')
+
+    task_parent_dir = os.path.join(TASK_ROOT, task)
+    if task == 'mnist_bin' or task == 'fashion_bin':
         n_u_space = [30, 60, 120, None]  # None means all data
-    elif task == 'fashion':
-        task_parent_dir = os.path.join(TASK_ROOT, 'fashion_bin')
-        n_u_space = [30, 60, 120, None]
-    elif task == 'cifar10':
-        task_parent_dir = os.path.join(TASK_ROOT, 'cifar10_bin')
+    elif task == 'cifar10_bin':
         n_u_space = [400, 800, 1600, None]
     else:
         raise NotImplementedError
+
     for c0 in range(0, 9):
         for c1 in range(c0 + 1, 10):
             task_dir = os.path.join(task_parent_dir, str(c0) + '_' + str(c1))
@@ -180,7 +178,7 @@ def corrupt_pseudo_labels(dataset='mnist'):
                     rand_index = np.random.choice(y_u_prime.shape[0], int(y_u_prime.shape[0] * error))
                     y_u_prime_flipped = y_u_prime.copy()
                     y_u_prime_flipped[rand_index] = 1 - y_u_prime_flipped[rand_index]
-                    np.save(os.path.join(task_dir, 'y_u_' + str(n_u) + '_' + str(error) + '.npy'), y_u_prime)
+                    np.save(os.path.join(task_dir, 'y_u_' + str(n_u) + '_' + str(error) + '.npy'), y_u_prime_flipped)
                 # np.save(os.path.join(task_dir, 'X_u_' + str(n_u) + '.npy'), X_u_prime)
 
     return
@@ -190,10 +188,10 @@ if __name__ == '__main__':
 
     # Generate strong pseudo-labels on different data sets and
     if len(sys.argv) < 2:
-        dataset = 'mnist'
+        dataset = 'mnist_bin'
     else:
         dataset = sys.argv[1]
-    if dataset in ['mnist', 'cifar10']:
+    if dataset in ['mnist_bin', 'cifar10_bin']:
         generate_label_for_binary_classification(dataset)
         corrupt_pseudo_labels(dataset)
     else:
