@@ -8,11 +8,10 @@ Label generator that
 import numpy as np
 import torch
 from snorkel.labeling.model.label_model import LabelModel
-from labeler.program_synthesis.heuristic_generator import HeuristicGenerator
-from labeler.temp_scaling import tstorch_calibrate
-from labeler.lenet_weak_labeler import LeNetWeakLabeler
-from labeler.omniglot_weak_labeler import OmniglotWeakLabeler
-from bootstrapping import bootstrap_xy_balanced_class
+from mako.labeler.program_synthesis.heuristic_generator import HeuristicGenerator
+from mako.labeler.temp_scaling import tstorch_calibrate
+from mako.labeler.lenet_weak_labeler import LeNetWeakLabeler
+from mako.utils.bootstrapping import bootstrap_xy_balanced_class
 
 if torch.cuda.is_available():
     DEVICE = "cuda:0"

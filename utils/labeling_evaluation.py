@@ -1,5 +1,5 @@
 """
-Helper functions to check labeling accuracy for the strong labeler by data programming
+Helper functions to inspect labeling accuracy for the strong labeler by data programming
 See main() for usage
 """
 

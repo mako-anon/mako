@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score
-from labeler.program_synthesis.synthesizer import Synthesizer
-from labeler.program_synthesis.verifier import Verifier
+from mako.labeler.program_synthesis.synthesizer import Synthesizer
+from mako.labeler.program_synthesis.verifier import Verifier
 
 import torch
 if torch.cuda.is_available():
