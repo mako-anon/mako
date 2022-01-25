@@ -1,3 +1,7 @@
+"""
+Step 2, ensemble weak labelers to a strong labelers to produce pseudo-labels
+"""
+
 import os
 import sys
 import numpy as np
@@ -21,7 +25,6 @@ def get_labelers(task, task_dir):
     # Read input lfs
     lfs = []
     for i in range(0, 100):
-        # print('loading lf ' + str(i))
         if task == 'mnist' or task == 'fashion':
             lf = LeNetWeakLabeler()
         elif task == 'cifar10':
@@ -59,13 +62,13 @@ def get_label_matrix(task, task_dir, lfs, n_u=None):
     return L_u, L_l, y_l
 
 
-# Generate labels by majority voting
+# Method 1: generate labels by majority voting
 def majority_vote_labeling(L_u):
     y_u_prime_mv = mode(L_u, axis=1)[0].transpose().flatten()
     return y_u_prime_mv
 
 
-# Generate labels by repeated labeling: find the 10% least confident labels and pass to next lf
+# Method 2: generate labels by repeated labeling: find the 10% least confident labels and pass to next lf
 def repeated_labeling(task_dir, lfs, n_u=None):
     if not os.path.exists(task_dir):
         raise FileNotFoundError
@@ -97,10 +100,10 @@ def repeated_labeling(task_dir, lfs, n_u=None):
     return y_u_prime_rl
 
 
-# Generate labels by Snorkel and calibrate by temperature scaling
-def snorkel_labeling(L_u, L_l, y_l):
+# Method 3: generate labels by Snorkel and calibrate by temperature scaling
+def snorkel_labeling(L_u, L_l, y_l, cardinality=2):
     L = np.concatenate((L_l, L_u), axis=0)
-    snorkel_model = LabelModel(cardinality=2, verbose=False)
+    snorkel_model = LabelModel(cardinality=cardinality, verbose=False)
     snorkel_model.fit(L)
     y_snorkel_u, logit_u = snorkel_model.predict(L_u, return_probs=True)
     y_snorkel_l, logit_l = snorkel_model.predict(L_l, return_probs=True)
@@ -111,37 +114,44 @@ def snorkel_labeling(L_u, L_l, y_l):
 
 # Generate labels, methods can be majority voting (mv), repeated labeling (rl) or snorkel
 # The labels are generated for different sizes of X_U
-def generate_label_for_binary_classification(task, method='mv'):
+def generate_strong_labels(task, method='mv'):
 
     task_parent_dir = os.path.join(TASK_ROOT, task)
-    if task == 'mnist_bin' or task == 'fashion_bin':
+    if task in ['mnist', 'fashion']:
         n_u_space = [30, 60, 120, None]  # None means all data
-    elif task == 'cifar10_bin':
+        cardinality = 2
+    elif task in ['cifar10']:
         n_u_space = [400, 800, 1600, None]
+        cardinality = 2
+    elif task in ['mnist_5_way', 'cifar100_5_way']:
+        n_u_space = [None]
+        cardinality = 5
+    elif task in ['cifar10_10_way']:
+        n_u_space = [None]
+        cardinality = 10
     else:
         raise NotImplementedError
 
-    for c0 in range(0, 9):
-        for c1 in range(c0 + 1, 10):
-            task_dir = os.path.join(task_parent_dir, str(c0) + '_' + str(c1))
-            lfs = get_labelers(task, task_dir)
-            for n_u in n_u_space:
-                if method == 'mv':
-                    L_u, L_l, y_l = get_label_matrix(task, task_dir, lfs, n_u=n_u)
-                    y_u_prime = majority_vote_labeling(L_u)
-                elif method == 'rl':
-                    y_u_prime = repeated_labeling(task_dir, lfs, n_u=n_u)
-                elif method == 'snorkel':
-                    L_u, L_l, y_l = get_label_matrix(task, task_dir, lfs, n_u=n_u)
-                    y_u_prime, logit_u_prime = snorkel_labeling(L_u, L_l, y_l)
-                else:
-                    raise NotImplementedError
-                if n_u is None:
-                    np.save(os.path.join(task_dir, 'y_u_prime_' + method + '.npy'), y_u_prime)
-                    print('Label generated for task ' + str(c0) + '_' + str(c1) + ' by ' + method)
-                else:
-                    np.save(os.path.join(task_dir, 'y_u_prime_' + method + '_' + str(n_u) + '.npy'), y_u_prime)
-                    print('Label generated for task ' + str(c0) + '_' + str(c1) + ' by ' + method + ' n_u=' + str(n_u))
+    for d in os.listdir(task_parent_dir):
+        task_dir = os.path.join(task_parent_dir, d)
+        lfs = get_labelers(task, task_dir)
+        for n_u in n_u_space:
+            if method == 'mv':
+                L_u, L_l, y_l = get_label_matrix(task, task_dir, lfs, n_u=n_u)
+                y_u_prime = majority_vote_labeling(L_u)
+            elif method == 'rl':
+                y_u_prime = repeated_labeling(task_dir, lfs, n_u=n_u)
+            elif method == 'snorkel':
+                L_u, L_l, y_l = get_label_matrix(task, task_dir, lfs, n_u=n_u)
+                y_u_prime, logit_u_prime = snorkel_labeling(L_u, L_l, y_l, cardinality=cardinality)
+            else:
+                raise NotImplementedError
+            if n_u is None:
+                np.save(os.path.join(task_dir, 'y_u_prime_' + method + '.npy'), y_u_prime)
+                print('Label generated for task ' + str(d) + ' by ' + method)
+            else:
+                np.save(os.path.join(task_dir, 'y_u_prime_' + method + '_' + str(n_u) + '.npy'), y_u_prime)
+                print('Label generated for task ' + str(d) + ' by ' + method + ' n_u=' + str(n_u))
     return
 
 
@@ -185,14 +195,14 @@ def corrupt_pseudo_labels(dataset='mnist'):
 
 
 if __name__ == '__main__':
-
     # Generate strong pseudo-labels on different data sets and
     if len(sys.argv) < 2:
-        dataset = 'mnist_bin'
+        dataset = 'mnist'
     else:
         dataset = sys.argv[1]
-    if dataset in ['mnist_bin', 'cifar10_bin']:
-        generate_label_for_binary_classification(dataset)
-        corrupt_pseudo_labels(dataset)
+    if dataset in ['mnist', 'fashion', 'cifar10', 'mnist_5_way', 'cifar10_10_way', 'cifar100_5_way']:
+        generate_strong_labels(dataset)
     else:
         raise NotImplementedError
+    if dataset in ['mnist', 'fashion', 'cifar10']:
+        corrupt_pseudo_labels(dataset)

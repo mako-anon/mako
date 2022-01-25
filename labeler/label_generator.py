@@ -40,10 +40,10 @@ class LabelGenerator:
         self.task = task
         if task in ['mnist', 'fashion', 'cifar10']:
             self.num_classes = 2
-        elif task in ['omniglot']:
-            self.num_classes = 10
-        elif task in ['mnist_5_way']:
+        elif task in ['mnist_5_way', 'cifar100_5_way']:
             self.num_classes = 5
+        elif task in ['cifar10_10_way']:
+            self.num_classes = 10
         else:
             raise NotImplementedError
         return
@@ -84,7 +84,9 @@ class LabelGenerator:
             X = self.X_l[idx]
             y = self.y_l[idx]
 
-        while acc_threshold >= 0.5:
+        # auto-tuning training hyperparams until 8 out of 10 weak labelers meet threshold
+        # if threshold too high, decrease by 0.05 until 1/num_classes
+        while acc_threshold >= 1 / self.num_classes:
             print("Searching hyperparameters with acc threshold = " + str(acc_threshold))
             for n_batches in n_batches_search_space:
                 if len(good_configs) > 0:  # we only need good configs with smallest epochs

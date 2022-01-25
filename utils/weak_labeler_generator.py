@@ -23,14 +23,27 @@ def generate_labeler_for_one_task(task_dir, task):
     X_u = np.load(os.path.join(task_dir, 'X_u.npy'))
     y_u = np.load(os.path.join(task_dir, 'y_u.npy'))
 
-    if task == 'mnist' or task == 'fashion':
+    # tuned hyperparams, don't change!
+    if task in ['mnist', 'fashion']:
         init_acc_threshold = 0.85
         bootstrap_size_per_class = 30
-    elif task == 'cifar10':
+    elif task in ['cifar10']:
         init_acc_threshold = 0.8
         bootstrap_size_per_class = 350
+    elif task in ['mnist_5_way']:
+        init_acc_threshold = 0.8
+        bootstrap_size_per_class = 50
+    elif task in ['cifar10_10_way']:
+        init_acc_threshold = 0.6
+        bootstrap_size_per_class = 750
+    elif task in ['cifar100_5_way']:
+        init_acc_threshold = 0.6
+        bootstrap_size_per_class = 200
     else:
         raise NotImplementedError
+
+    # guess 100 times for each weak labeler, initially keep 20, then add keep 1 each time
+    # max num weak labelers = 25, min = 5
     lg = LabelGenerator(X_u=X_u, y_u=y_u, X_l=X_l, y_l=y_l, task=task, num_guesses=100, keep=20,
                         max_labelers=25, min_labelers=5, init_acc_threshold=init_acc_threshold,
                         bootstrap_size_per_class=bootstrap_size_per_class)
@@ -44,20 +57,17 @@ def generate_labeler_for_one_task(task_dir, task):
 
 
 # Generate and save weak labelers by modified Snuba
-def generate_labeler_for_binary_classification(task):
-    if task == 'mnist':
-        task_parent_dir = os.path.join(TASK_ROOT, 'mnist_bin')
-    elif task == 'fashion':
-        task_parent_dir = os.path.join(TASK_ROOT, 'fashion_bin')
-    elif task == 'cifar10':
-        task_parent_dir = os.path.join(TASK_ROOT, 'cifar10_bin')
+def generate_weak_labelers(task):
+    if task in ['mnist', 'fashion', 'cifar10']:
+        task_parent_dir = os.path.join(TASK_ROOT, task + '_bin')
+    elif task in ['mnist_5_way', 'cifar10_10_way', 'cifar100_5_way']:
+        task_parent_dir = os.path.join(TASK_ROOT, task)
     else:
         raise NotImplementedError
 
-    for c0 in range(0, 9):
-        for c1 in range(c0 + 1, 10):
-            task_dir = os.path.join(task_parent_dir, str(c0) + '_' + str(c1))
-            generate_labeler_for_one_task(task_dir=task_dir, task=task)
+    for d in os.listdir(task_parent_dir):
+        task_dir = os.path.join(task_parent_dir, d)
+        generate_labeler_for_one_task(task_dir=task_dir, task=task)
     return
 
 
@@ -66,8 +76,8 @@ if __name__ == '__main__':
         dataset = 'mnist'
     else:
         dataset = sys.argv[1]
-    if dataset in ['mnist', 'cifar10']:
-        generate_labeler_for_binary_classification(dataset)
+    if dataset in ['mnist', 'fashion', 'cifar10', 'mnist_5_way', 'cifar10_10_way', 'cifar100_5_way']:
+        generate_weak_labelers(dataset)
     else:
         raise NotImplementedError
 

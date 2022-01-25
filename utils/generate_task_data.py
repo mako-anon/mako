@@ -233,6 +233,7 @@ def generate_5_way_cifar100():
 if __name__ == '__main__':
     # generate lml tasks for semi-heterogeneous experiments
     generate_binary_task_data('mnist')
+    generate_binary_task_data('fashion')
     generate_binary_task_data('cifar10')
     # generate lml tasks for instance-incremental experiments
     generate_5_way_mnist()
