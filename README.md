@@ -18,20 +18,21 @@ This **anonymous** code repository is used for semi-supervised lifelong learning
 
 ### Step 0: Prepare for task data
 
-Please refer to utils/generate_task_data.py for this step. The script shows examples that prepare task data for binary MNIST, binary CIFAR-10,
+Please refer to `utils/generate_task_data.py` for this step. The script shows examples that prepare task data for binary MNIST, binary CIFAR-10,
 5-way MNIST, 10-way CIFAR-10 and 5-way CIFAR-100. Each task has (X_L, Y_L, X_U, Y_U, X_T, Y_T), corresponding to labeled
 training data, unlabeled training data and testing data, where Y_U is unused.
 
 ### Step 1: Generate weak labelers
 
-Please refer to utils/weak_labeler_generator.py for this step. The script shows examples that call a modified version of
+Please refer to `utils/weak_labeler_generator.py` for this step. The script shows examples that call a modified version of
 [Snuba](https://github.com/HazyResearch/reef/) to generate a set weak labelers as PyTorch models for each task.
 
 ### Step 2: Ensemble strong pseudo-labels by data programming
 
-Please refer to utils/strong_labels_generator.py for this step. The script shows examples that ensemble strong labels from the weak labelers
+Please refer to `utils/strong_labels_generator.py` for this step. The script shows examples that ensemble strong labels from the weak labelers
 using one of the three methods: majority voting, repeated labeling and Snorkel generative model. In addition, we can adjust
-the size of X_U and corrupt a portion of y_u_prime by random flipping for analysis.
+the size of X_U and corrupt a portion of y_u_prime by random flipping for analysis using the `generate_strong_labels()` and
+`corrupt_pseudo_labels()` functions.
 
 ### Step 3: Supervised lifelong machine learning
 
