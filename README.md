@@ -71,6 +71,12 @@ The following command line arguments are for `lml/supervised_lml.py`.
     - with Mako labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --save_mat_name cifar10_dfcnn_unlabel400.mat```
     - with true labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --use_true_label --save_mat_name cifar10_dfcnn_unlabel400_gt.mat```
 
+cf. To set noise to the generated labels, use argument ```--mako_noise```, such as
+
+    - DF-CNN on CIFAR-10 with 20% noise on Mako labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --save_mat_name cifar10_dfcnn_unlabel400.mat --mako_noise 0.2```
+
+cf. To use a specific data programming method for label generation, use argument ```--mako_baseline``` with one of *mv, repeated, snorkel*
+
 ### Comparison to semi-supervised LML
 1. CNNL MNIST experiment
 
