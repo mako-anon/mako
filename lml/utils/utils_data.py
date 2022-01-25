@@ -4,17 +4,26 @@ import copy
 from os import getcwd, listdir, mkdir
 
 # Added baseline_config parameter to override experiments for specific baselines: {0: no change, 1: ORDISCO class-incremental}
-def data_loader_binarytask_rep(path_to_data, num_classes, info_file_name, num_repetition, num_unlabel_data, num_validation_data=-1, flatten_img=True, use_true_label=False, confidence_threshold=0.0, baseline_config=0):
+def data_loader_binarytask_rep(path_to_data, num_classes, info_file_name, num_repetition, num_unlabel_data, num_validation_data=-1, flatten_img=True, use_true_label=False, confidence_threshold=0.0, baseline_config=0, noise_level=0.0, mako_baseline='none'):
+    if mako_baseline.lower() == 'mv':
+        print("\tMako baseline - majority vote")
+    elif mako_baseline.lower() == 'snorkel':
+        print("\tMako baseline - snorkel")
+    elif mako_baseline.lower() == 'repeated':
+        print("\tMako baseline - repeated labeling")
     train_data_rep, valid_data_rep = [], []
     for rep_cnt in range(num_repetition):
-        data_file_name = info_file_name+'_rep'+str(rep_cnt)+'.pkl' if not use_true_label else info_file_name+'_T_rep'+str(rep_cnt)+'.pkl'
-        train_data, valid_data, test_data = data_loader_binarytask(path_to_data, num_classes, data_file_name, num_unlabel_data, num_validation_data=num_validation_data, flatten_img=flatten_img, use_true_label=use_true_label, confidence_threshold=confidence_threshold, baseline_config=baseline_config)
+        if noise_level <= 0.0:
+            data_file_name = info_file_name+'_th'+str(confidence_threshold)+'_rep'+str(rep_cnt)+'.pkl' if not use_true_label else info_file_name+'_th'+str(confidence_threshold)+'_T_rep'+str(rep_cnt)+'.pkl'
+        else:
+            data_file_name = info_file_name+'_th'+str(confidence_threshold)+'_n'+str(noise_level)+'_rep'+str(rep_cnt)+'.pkl' if not use_true_label else info_file_name+'_th'+str(confidence_threshold)+'_n'+str(noise_level)+'_T_rep'+str(rep_cnt)+'.pkl'
+        train_data, valid_data, test_data = data_loader_binarytask(path_to_data, num_classes, data_file_name, num_unlabel_data, num_validation_data=num_validation_data, flatten_img=flatten_img, use_true_label=use_true_label, confidence_threshold=confidence_threshold, baseline_config=baseline_config, noise_level=noise_level, mako_baseline=mako_baseline)
         train_data_rep.append(train_data)
         valid_data_rep.append(valid_data)
         print('Complete loading data for repetition %d'%(rep_cnt))
     return train_data_rep, valid_data_rep, test_data
 
-def data_loader_binarytask(path_to_data, num_classes, info_file_name, num_unlabel_data, num_validation_data=-1, flatten_img=True, use_true_label=False, confidence_threshold=0.0, baseline_config=0):
+def data_loader_binarytask(path_to_data, num_classes, info_file_name, num_unlabel_data, num_validation_data=-1, flatten_img=True, use_true_label=False, confidence_threshold=0.0, baseline_config=0, noise_level=0.0, mako_baseline='none'):
     def index_of_second_class_binarytask(label_data):
         return_index = -1
         for i in range(1, label_data.shape[0]):
@@ -65,7 +74,14 @@ def data_loader_binarytask(path_to_data, num_classes, info_file_name, num_unlabe
 
             y_l = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_l.npy')
             y_u = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u.npy')
-            y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime.npy')
+            if mako_baseline.lower() == 'mv':
+                y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime_mv.npy')
+            elif mako_baseline.lower() == 'snorkel':
+                y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime_snorkel.npy')
+            elif mako_baseline.lower() == 'repeated':
+                y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime_rl.npy')
+            else:
+                y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime.npy')
             y_test = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_test.npy')
 
             logit_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/logit_u_prime.npy')
@@ -108,7 +124,14 @@ def data_loader_binarytask(path_to_data, num_classes, info_file_name, num_unlabe
 
                 y_l = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_l.npy')
                 y_u = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u.npy')
-                y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime.npy')
+                if mako_baseline.lower() == 'mv':
+                    y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime_mv.npy')
+                elif mako_baseline.lower() == 'snorkel':
+                    y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime_snorkel.npy')
+                elif mako_baseline.lower() == 'repeated':
+                    y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime_rl.npy')
+                else:
+                    y_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_u_prime.npy')
                 y_test = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/y_test.npy')
 
                 logit_u_prime = np.load(path_to_data + '/' + str(class_cnt0) + '_' + str(class_cnt1) + '/logit_u_prime.npy')
@@ -120,18 +143,33 @@ def data_loader_binarytask(path_to_data, num_classes, info_file_name, num_unlabe
                         index_u_train, index_valid = get_randomized_indices(num_u_class0, num_unlabel_data//2, max(num_validation_data//2, 30), confidence_threshold, logits=logit_u_prime[0:start_index_second_class, 0])
                         task_data_info['train'][str(class_cnt0)] = index_u_train
                         task_data_info['validation'][str(class_cnt0)] = index_valid
+                        if noise_level > 0.0:
+                            task_data_info['train'][str(class_cnt0)+'_flip'] = np.random.choice(len(index_u_train), int(len(index_u_train)*noise_level), replace=False)
                     if (str(class_cnt1) not in task_data_info['train'].keys()) or (str(class_cnt1) not in task_data_info['validation'].keys()):
                         index_u_train, index_valid = get_randomized_indices(num_u_class1, num_unlabel_data//2, max(num_validation_data//2, 30), confidence_threshold, logits=logit_u_prime[start_index_second_class:, 1])
                         task_data_info['train'][str(class_cnt1)] = index_u_train
                         task_data_info['validation'][str(class_cnt1)] = index_valid
+                        if noise_level > 0.0:
+                            task_data_info['train'][str(class_cnt1)+'_flip'] = np.random.choice(len(index_u_train), int(len(index_u_train)*noise_level), replace=False)
 
                 indices_train_unlabeled = list(task_data_info['train'][str(class_cnt0)]) + [a+start_index_second_class for a in task_data_info['train'][str(class_cnt1)]]
                 indices_valid_unlabeled = list(task_data_info['validation'][str(class_cnt0)]) + [a+start_index_second_class for a in task_data_info['validation'][str(class_cnt1)]]
                 train_x, valid_x = np.transpose(np.concatenate((x_l, x_u[indices_train_unlabeled]), axis=0), (0, 2, 3, 1)), np.transpose(x_u[indices_valid_unlabeled], (0, 2, 3, 1))
                 if use_true_label:
+                    # Use true labels instead of Mako-generated labels
                     train_y, valid_y = np.concatenate((y_l, y_u[indices_train_unlabeled]), axis=0), y_u[indices_valid_unlabeled]
                 else:
-                    train_y, valid_y = np.concatenate((y_l, y_u_prime[indices_train_unlabeled]), axis=0), y_u_prime[indices_valid_unlabeled]
+                    # Use Mako-generated labels
+                    if noise_level > 0.0:
+                        # Corrupt a portion of the generated labels according to the given noise level
+                        train_y_u_tmp_c0 = y_u_prime[list(task_data_info['train'][str(class_cnt0)])].copy()
+                        train_y_u_tmp_c1 = y_u_prime[[a+start_index_second_class for a in task_data_info['train'][str(class_cnt1)]]].copy()
+                        train_y_u_tmp_c0[list(task_data_info['train'][str(class_cnt0)+'_flip'])] = 1 - train_y_u_tmp_c0[list(task_data_info['train'][str(class_cnt0)+'_flip'])]
+                        train_y_u_tmp_c1[list(task_data_info['train'][str(class_cnt1)+'_flip'])] = 1 - train_y_u_tmp_c1[list(task_data_info['train'][str(class_cnt1)+'_flip'])]
+                        train_y = np.concatenate((y_l, train_y_u_tmp_c0, train_y_u_tmp_c1), axis=0)
+                        valid_y = y_u_prime[indices_valid_unlabeled]
+                    else:
+                        train_y, valid_y = np.concatenate((y_l, y_u_prime[indices_train_unlabeled]), axis=0), y_u_prime[indices_valid_unlabeled]
                 test_x = np.transpose(x_test, (0, 2, 3, 1))
                 if flatten_img:
                     num_train, num_valid, num_test = train_x.shape[0], valid_x.shape[0], test_x.shape[0]

@@ -5,8 +5,6 @@ See main() for usage
 
 import os
 import numpy as np
-import pickle
-import sys
 from matplotlib import pyplot as plt
 
 TASK_ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'task_data')
@@ -51,6 +49,8 @@ def evaluate_labeling_accuracy(task='mnist'):
 
 
 if __name__ == '__main__':
+
+    # Some example uses
 
     # print labeling accuracies
     datasets = ['mnist', 'cifar10', 'cifar10_10_way', 'cifar100_5_way', 'mnist_5_way']

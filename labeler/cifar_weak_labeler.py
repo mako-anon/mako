@@ -236,7 +236,7 @@ if __name__ == '__main__':
     X_u = np.load('D:\phd\mako\mako_iclr\\sample_task_data\cifar10\X_u.npy')
     y_u = np.load('D:\phd\mako\mako_iclr\\sample_task_data\cifar10\y_u.npy')
 
-    from utils.bootstrapping import bootstrap_xy
+    from labeler.bootstrapping import bootstrap_xy
 
     lfs = []
 

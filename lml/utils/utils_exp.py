@@ -1,5 +1,6 @@
 from tensorflow.nn import relu
 
+
 def model_setup(data_type, data_input_dim, model_type, test_type=0, cnn_padding_type_same=True, skip_connect_test_type=0, highway_connect_test_type=0, num_clayers=-1, phase1_max_epoch=100, darts_approx_order=1):
     model_architecture = None
     model_hyperpara = {}

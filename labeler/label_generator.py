@@ -1,17 +1,13 @@
 '''
-Label generator that
-(1) call Snuba to generate weak labelers,
-(2) call Snorkel to generate strong labels from the weak labelers
-(3) temperature scaling
+Label generator that calls modified Snuba to generate weak labelers
 '''
 
 import numpy as np
 import torch
 from snorkel.labeling.model.label_model import LabelModel
-from mako.labeler.program_synthesis.heuristic_generator import HeuristicGenerator
-from mako.labeler.temp_scaling import tstorch_calibrate
-from mako.labeler.lenet_weak_labeler import LeNetWeakLabeler
-from mako.utils.bootstrapping import bootstrap_xy_balanced_class
+from labeler.program_synthesis.heuristic_generator import HeuristicGenerator
+from labeler.lenet_weak_labeler import LeNetWeakLabeler
+from labeler.bootstrapping import bootstrap_xy_balanced_class
 
 if torch.cuda.is_available():
     DEVICE = "cuda:0"
@@ -309,26 +305,3 @@ class LabelGenerator:
             y_l_hat = np.argmax(prob, axis=1)
             L_l = L_l + [y_l_hat] * pad
         return np.array(L_u).T, np.array(L_l).T
-
-    # # main function to be called
-    # def generate_labels(self, log_file):
-    #
-    #     # Step 1: generate label matrices from Snuba, track number of labelers generated
-    #     lfs = self.generate_snuba_lfs(log_file)
-    #     L_u, L_l = self.generate_label_matrices(lfs)
-    #     L = np.concatenate((L_l, L_u), axis=0)
-    #
-    #     # Step 2: ensemble label matrices by training a Snorkel LabelModel
-    #     # Here, need at least 3 weak labeling functions, so there is a padding in generate_label_matrices
-    #     snorkel_model = LabelModel(cardinality=self.num_classes, verbose=False)
-    #     snorkel_model.fit(L)
-    #
-    #     # Step 3: compute logits
-    #     y_snorkel_u, logit_u = snorkel_model.predict(L_u, return_probs=True)
-    #     y_snorkel_l, logit_l = snorkel_model.predict(L_l, return_probs=True)
-    #
-    #     # Step 4: temperature scaling to produce final y_u_prime
-    #     logit_u_calibrated = tstorch_calibrate(val_logits=logit_l, val_ys=self.y_l.astype('int64'), logits=logit_u)
-    #     y_u_prime = np.argmax(logit_u_calibrated, axis=1)
-    #
-    #     return logit_u_calibrated, y_u_prime, logit_l, y_snorkel_l

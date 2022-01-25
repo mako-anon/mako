@@ -6,7 +6,7 @@ import os
 import numpy as np
 import sys
 import torch
-from mako.labeler.label_generator import LabelGenerator
+from labeler.label_generator import LabelGenerator
 if torch.cuda.is_available():
     DEVICE = "cuda:0"
 else:
@@ -71,13 +71,17 @@ def generate_weak_labelers(task):
     return
 
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
+def generate_weak_labelers_main(args):
+    if len(args) < 2:
         dataset = 'mnist'
     else:
-        dataset = sys.argv[1]
+        dataset = args[1]
     if dataset in ['mnist', 'fashion', 'cifar10', 'mnist_5_way', 'cifar10_10_way', 'cifar100_5_way']:
         generate_weak_labelers(dataset)
     else:
         raise NotImplementedError
+
+
+if __name__ == '__main__':
+    generate_weak_labelers_main(sys.argv)
 

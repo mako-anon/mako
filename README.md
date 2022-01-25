@@ -16,26 +16,30 @@ This **anonymous** code repository is used for semi-supervised lifelong learning
 
 ## Instructions
 
+Please run the following 4 scripts in sequential order.
+
 ### Step 0: Prepare for task data
 
-Please refer to `utils/generate_task_data.py` for this step. The script shows examples that prepare task data for binary MNIST, binary CIFAR-10,
+The script for this step is `labeler/generate_task_data.py`. The script shows examples that prepare task data for binary MNIST, binary CIFAR-10,
 5-way MNIST, 10-way CIFAR-10 and 5-way CIFAR-100. Each task has (X_L, Y_L, X_U, Y_U, X_T, Y_T), corresponding to labeled
 training data, unlabeled training data and testing data, where Y_U is unused.
 
 ### Step 1: Generate weak labelers
 
-Please refer to `utils/weak_labeler_generator.py` for this step. The script shows examples that call a modified version of
+The script for this step is `labeler/weak_labeler_generator.py`. The script shows examples that call a modified version of
 [Snuba](https://github.com/HazyResearch/reef/) to generate a set weak labelers as PyTorch models for each task.
 
 ### Step 2: Ensemble strong pseudo-labels by data programming
 
-Please refer to `utils/strong_labels_generator.py` for this step. The script shows examples that ensemble strong labels from the weak labelers
+The script for this step is `labeler/strong_labels_generator.py`. The script shows examples that ensemble strong labels from the weak labelers
 using one of the three methods: majority voting, repeated labeling and Snorkel generative model. In addition, we can adjust
 the size of X_U and corrupt a portion of y_u_prime by random flipping for analysis using the `generate_strong_labels()` and
 `corrupt_pseudo_labels()` functions.
 
 ### Step 3: Supervised lifelong machine learning
 
+The script for this step is `lml/supervised_lml.py`. The script loads the pseudo-labeled data and calls supervised lifelong machine
+learning tools. Please refer to the following sections to see details of the tools and what command line arguments are needed to run this script.
 
 
 ## Lifelong Machine Learning Tools
@@ -54,6 +58,8 @@ the size of X_U and corrupt a portion of y_u_prime by random flipping for analys
     - The code is available online.
 
 ## Sample command to train a specific model
+The following command line arguments are for `lml/supervised_lml.py`.
+
 ### Comparison to supervised LML
 1. Tensor Factorization on MNIST (45 binary tasks): labeled set and *120* instances of unlabeled set per task
 

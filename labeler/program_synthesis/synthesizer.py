@@ -5,9 +5,9 @@ from sklearn.metrics import f1_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from mako.labeler.lenet_weak_labeler import LeNetWeakLabeler
-from mako.labeler.cifar_weak_labeler import CifarWeakLabeler
-from mako.utils.bootstrapping import bootstrap_xy_balanced_class
+from labeler.lenet_weak_labeler import LeNetWeakLabeler
+from labeler.cifar_weak_labeler import CifarWeakLabeler
+from labeler.bootstrapping import bootstrap_xy_balanced_class
 
 import torch
 if torch.cuda.is_available():

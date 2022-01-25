@@ -7,7 +7,6 @@ import os
 import numpy as np
 from torchvision import datasets
 from torchvision.transforms import ToTensor
-import tensorflow_datasets as tfds
 
 DATA_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'raw_data')
 TASK_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'task_data')
@@ -230,7 +229,7 @@ def generate_5_way_cifar100():
     return
 
 
-if __name__ == '__main__':
+def generate_task_data_main():
     # generate lml tasks for semi-heterogeneous experiments
     generate_binary_task_data('mnist')
     generate_binary_task_data('fashion')
@@ -240,5 +239,9 @@ if __name__ == '__main__':
     generate_10_way_cifar10()
     # generate lml tasks for class-incremental experiments
     generate_5_way_cifar100()
+
+
+if __name__ == '__main__':
+    generate_task_data_main()
 
 

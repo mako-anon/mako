@@ -8,10 +8,10 @@ import numpy as np
 import torch
 from scipy.stats import mode
 from snorkel.labeling.model.label_model import LabelModel
-from mako.labeler.label_generator import LabelGenerator
-from mako.labeler.lenet_weak_labeler import LeNetWeakLabeler
-from mako.labeler.cifar_weak_labeler import CifarWeakLabeler
-from mako.labeler.temp_scaling import tstorch_calibrate
+from labeler.label_generator import LabelGenerator
+from labeler.lenet_weak_labeler import LeNetWeakLabeler
+from labeler.cifar_weak_labeler import CifarWeakLabeler
+from labeler.temp_scaling import tstorch_calibrate
 if torch.cuda.is_available():
     DEVICE = "cuda:0"
 else:
@@ -194,15 +194,19 @@ def corrupt_pseudo_labels(dataset='mnist'):
     return
 
 
-if __name__ == '__main__':
-    # Generate strong pseudo-labels on different data sets and
-    if len(sys.argv) < 2:
+# Generate strong pseudo-labels on different data sets and corrupt some
+def generate_strong_labels_main(args):
+    if len(args) < 2:
         dataset = 'mnist'
     else:
-        dataset = sys.argv[1]
+        dataset = args[1]
     if dataset in ['mnist', 'fashion', 'cifar10', 'mnist_5_way', 'cifar10_10_way', 'cifar100_5_way']:
         generate_strong_labels(dataset)
     else:
         raise NotImplementedError
     if dataset in ['mnist', 'fashion', 'cifar10']:
         corrupt_pseudo_labels(dataset)
+
+
+if __name__ == '__main__':
+    generate_strong_labels_main(sys.argv)
