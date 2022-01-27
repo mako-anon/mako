@@ -63,45 +63,45 @@ The following command line arguments are for `lml/supervised_lml.py`.
 ### Comparison to supervised LML
 1. Tensor Factorization on MNIST (45 binary tasks): labeled set and *120* instances of unlabeled set per task
 
-    - with Mako labels: ```python3 main_mako.py --gpu 0 --data_type mnist_mako --num_clayers 2 --model_type Hybrid_TF --test_type 4 --lifelong --data_unlabel 120 --save_mat_name mnist_tf_unlabel120.mat```
-    - with true labels: ```python3 main_mako.py --gpu 0 --data_type mnist_mako --num_clayers 2 --model_type Hybrid_TF --test_type 4 --lifelong --data_unlabel 120 --use_true_label --save_mat_name mnist_tf_unlabel120_gt.mat```
+    - with Mako labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type mnist_mako --num_clayers 2 --model_type Hybrid_TF --test_type 4 --lifelong --data_unlabel 120 --save_mat_name mnist_tf_unlabel120.mat```
+    - with true labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type mnist_mako --num_clayers 2 --model_type Hybrid_TF --test_type 4 --lifelong --data_unlabel 120 --use_true_label --save_mat_name mnist_tf_unlabel120_gt.mat```
 
 2. DF-CNN on CIFAR-10 (45 binary tasks): labeled set and *400* instances of unlabeled set per task
 
-    - with Mako labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --save_mat_name cifar10_dfcnn_unlabel400.mat```
-    - with true labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --use_true_label --save_mat_name cifar10_dfcnn_unlabel400_gt.mat```
+    - with Mako labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --save_mat_name cifar10_dfcnn_unlabel400.mat```
+    - with true labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --use_true_label --save_mat_name cifar10_dfcnn_unlabel400_gt.mat```
 
 cf. To set noise to the generated labels, use argument ```--mako_noise```, such as
 
-    - DF-CNN on CIFAR-10 with 20% noise on Mako labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --save_mat_name cifar10_dfcnn_unlabel400.mat --mako_noise 0.2```
+    - DF-CNN on CIFAR-10 with 20% noise on Mako labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --num_clayers 4 --model_type Hybrid_DFCNN --test_type 4 --lifelong --data_unlabel 400 --save_mat_name cifar10_dfcnn_unlabel400.mat --mako_noise 0.2```
 
 cf. To use a specific data programming method for label generation, use argument ```--mako_baseline``` with one of *mv, repeated, snorkel*
 
 ### Comparison to semi-supervised LML
 1. CNNL MNIST experiment
 
-  - with Mako labels: ```python3 main_mako.py --gpu 0 --data_type mnist_mako --model_type SNN --save_mat_name mnist_5way_inst_incr.mat --lifelong --num_classes 5 --instance_incremental```
-  - with true labels: ```python3 main_mako.py --gpu 0 --data_type mnist_mako --model_type SNN --save_mat_name mnist_5way_inst_incr_gt.mat --lifelong --num_classes 5 --instance_incremental --use_true_label```
+  - with Mako labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type mnist_mako --model_type SNN --save_mat_name mnist_5way_inst_incr.mat --lifelong --num_classes 5 --instance_incremental```
+  - with true labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type mnist_mako --model_type SNN --save_mat_name mnist_5way_inst_incr_gt.mat --lifelong --num_classes 5 --instance_incremental --use_true_label```
 
 2. CNNL CIFAR-10 experiment
 
-  - with Mako labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --model_type SNN --save_mat_name cifar10_10way_inst_incr.mat --lifelong --num_classes 10 --instance_incremental```
-  - with true labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --model_type SNN --save_mat_name cifar10_10way_inst_incr_gt.mat --lifelong --num_classes 10 --instance_incremental --use_true_label```
+  - with Mako labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --model_type SNN --save_mat_name cifar10_10way_inst_incr.mat --lifelong --num_classes 10 --instance_incremental```
+  - with true labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --model_type SNN --save_mat_name cifar10_10way_inst_incr_gt.mat --lifelong --num_classes 10 --instance_incremental --use_true_label```
 
 3. ORDISCO CIFAR-10 experiment (class-incremental)
 
-    - with Mako labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-dfcnn.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline```
-    - with true labels: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-dfcnn_gt.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline --use_true_label```
-    - with Mako labels, tensor factorization: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-tf.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline```
-    - with true labels, tensor factorization: ```python3 main_mako.py --gpu 0 --data_type cifar10_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-tf_gt.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline --use_true_label```
-    - with Mako labels, DEN: ```python3 main_mako.py --gpu 1 --data_type cifar10_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-den.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline```
-    - with Mako labels, DEN: ```python3 main_mako.py --gpu 1 --data_type cifar10_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-den_gt.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline --use_true_label```
+    - with Mako labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-dfcnn.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline```
+    - with true labels: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-dfcnn_gt.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline --use_true_label```
+    - with Mako labels, tensor factorization: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-tf.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline```
+    - with true labels, tensor factorization: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar10_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-tf_gt.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline --use_true_label```
+    - with Mako labels, DEN: ```python3 lml/supervised_lml.py --gpu 1 --data_type cifar10_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-den.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline```
+    - with Mako labels, DEN: ```python3 lml/supervised_lml.py --gpu 1 --data_type cifar10_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar10_class_incr_ordisco-den_gt.mat --lifelong --num_classes 2 --data_unlabel 5000 --ordisco_ci_baseline --use_true_label```
 
 4. DistillMatch CIFAR-100 experiment:
 
-  - with Mako labels, DF-CNN: ```python3 main_mako.py --gpu 0 --data_type cifar100_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-dfcnn.mat --lifelong --num_classes 5 --data_unlabel 2000```
-  - with true labels, DF-CNN: ```python3 main_mako.py --gpu 1 --data_type cifar100_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-dfcnn_gt.mat --lifelong --num_classes 5 --data_unlabel 2000 --use_true_label```
-  - with Mako labels, tensor factorization: ```python3 main_mako.py --gpu 0 --data_type cifar100_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-tf.mat --lifelong --num_classes 5 --data_unlabel 2000```
-  - with true labels, tensor factorization: ```python3 main_mako.py --gpu 1 --data_type cifar100_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-tf_gt.mat --lifelong --num_classes 5 --data_unlabel 2000 --use_true_label```
-  - with Mako labels, DEN: ```python3 main_mako.py --gpu 0 --data_type cifar100_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-den.mat --lifelong --num_classes 5 --data_unlabel 2000```
-  - with true labels, DEN: ```python3 main_mako.py --gpu 0 --data_type cifar100_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-den_gt.mat --lifelong --num_classes 5 --data_unlabel 2000 --use_true_label```
+  - with Mako labels, DF-CNN: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar100_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-dfcnn.mat --lifelong --num_classes 5 --data_unlabel 2000```
+  - with true labels, DF-CNN: ```python3 lml/supervised_lml.py --gpu 1 --data_type cifar100_mako --model_type hybrid_dfcnn --test_type 4 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-dfcnn_gt.mat --lifelong --num_classes 5 --data_unlabel 2000 --use_true_label```
+  - with Mako labels, tensor factorization: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar100_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-tf.mat --lifelong --num_classes 5 --data_unlabel 2000```
+  - with true labels, tensor factorization: ```python3 lml/supervised_lml.py --gpu 1 --data_type cifar100_mako --model_type hybrid_tf --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-tf_gt.mat --lifelong --num_classes 5 --data_unlabel 2000 --use_true_label```
+  - with Mako labels, DEN: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar100_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-den.mat --lifelong --num_classes 5 --data_unlabel 2000```
+  - with true labels, DEN: ```python3 lml/supervised_lml.py --gpu 0 --data_type cifar100_mako --model_type den --test_type 2 --num_clayers 4 --save_mat_name cifar100_class_incr_distillmatch-den_gt.mat --lifelong --num_classes 5 --data_unlabel 2000 --use_true_label```
